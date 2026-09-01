@@ -1,0 +1,59 @@
+services:
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.6.0
+    environment: { ZOOKEEPER_CLIENT_PORT: 2181 }
+
+  kafka:
+    image: confluentinc/cp-kafka:7.6.0
+    depends_on: [zookeeper]
+    environment:
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
+    ports: ["9092:9092"]
+
+  postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: airflow
+      POSTGRES_PASSWORD: airflow
+      POSTGRES_DB: airflow
+
+  airflow-init:
+    image: apache/airflow:3.3.1
+    depends_on: [postgres]
+    environment: &airflow-env
+      AIRFLOW__CORE__EXECUTOR: LocalExecutor
+      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres/airflow
+      _PIP_ADDITIONAL_REQUIREMENTS: pandas  # 실습 편의용 — 운영 환경에서는 이미지에 미리 빌드해서 쓸 것
+    volumes:
+      - "./dags:/opt/airflow/dags"
+      - "../../data:/opt/airflow/data"   # 저장소 루트의 data/ 폴더를 컨테이너 안에서도 그대로 사용
+    command: ["airflow", "db", "migrate"]
+
+  airflow-apiserver:      # 기존 webserver 자리 — UI·API를 함께 서빙
+    image: apache/airflow:3.3.1
+    depends_on: [airflow-init]
+    environment: *airflow-env
+    ports: ["8080:8080"]
+    volumes:
+      - "./dags:/opt/airflow/dags"
+      - "../../data:/opt/airflow/data"   # 저장소 루트의 data/ 폴더를 컨테이너 안에서도 그대로 사용
+    command: ["airflow", "api-server"]
+
+  airflow-scheduler:
+    image: apache/airflow:3.3.1
+    depends_on: [airflow-init]
+    environment: *airflow-env
+    volumes:
+      - "./dags:/opt/airflow/dags"
+      - "../../data:/opt/airflow/data"   # 저장소 루트의 data/ 폴더를 컨테이너 안에서도 그대로 사용
+    command: ["airflow", "scheduler"]
+
+  airflow-dag-processor:  # 3.x부터 DAG 파싱이 스케줄러에서 분리된 별도 컴포넌트
+    image: apache/airflow:3.3.1
+    depends_on: [airflow-init]
+    environment: *airflow-env
+    volumes:
+      - "./dags:/opt/airflow/dags"
+      - "../../data:/opt/airflow/data"   # 저장소 루트의 data/ 폴더를 컨테이너 안에서도 그대로 사용
+    command: ["airflow", "dag-processor"]

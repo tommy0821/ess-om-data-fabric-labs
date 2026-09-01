@@ -1,0 +1,4 @@
+# ch02_integration/lab2-2_schema_standardization/metadata_catalog.yaml에 추가되는 항목.
+# 이 Lab에서 새로 생기는 AI 분석 지표를 설명한다.
+temp_c_forecast: { unit: "°C", desc: "LSTM 기반 다음 시점 PCS 온도 예측값 (Lab 4-1)" }
+anomaly_score:   { unit: "-",  desc: "IsolationForest 이상 스코어, 낮을수록 이상 (Lab 4-2)" }

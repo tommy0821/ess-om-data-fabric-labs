@@ -1,0 +1,28 @@
+# --- Python ---
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+env/
+
+# --- Jupyter ---
+.ipynb_checkpoints/
+
+# --- IDE ---
+.idea/
+.vscode/
+
+# --- OS ---
+.DS_Store
+
+# --- 재생성 가능한 산출물 (Lab 실행 결과) ---
+data/processed/*
+!data/processed/.gitkeep
+
+# --- Airflow(Lab 2-3) 로컬 실행 시 생성되는 파일 ---
+**/airflow-data/
+**/logs/
+**/*.db
+
+# --- Lab 3-2에서 생성되는 암호화 키(실습용, 커밋 금지) ---
+**/secret.key

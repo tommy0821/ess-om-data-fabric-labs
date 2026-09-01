@@ -1,0 +1,7 @@
+# unified_long.csv의 metric 컬럼이 담는 값들에 대한 설명. 4장에서 새 지표(예측값, 이상 스코어)가
+# 추가될 때마다 이 파일에도 항목을 덧붙인다 (책 4.4절 Lab 4-3 참고).
+volt:          { unit: "V",  desc: "PCS 출력 전압" }
+curr:          { unit: "A",  desc: "PCS 출력 전류" }
+temp_c:        { unit: "°C", desc: "PCS 본체 온도" }
+soc_pct:       { unit: "%",  desc: "배터리 충전율(State of Charge)" }
+cell_temp_max: { unit: "°C", desc: "배터리 셀 최고 온도" }
